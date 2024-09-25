@@ -1,4 +1,5 @@
 import User from "../models/user-model.js";
+import jwtService from "../services/jwt-service.js";
 
 export const signup = async (req, res) => {
   try {
@@ -8,7 +9,9 @@ export const signup = async (req, res) => {
       nickname: req.body.nickname,
     });
 
-    res.status(201).json(user);
+    const token = jwtService.generateAcessToken(user)
+
+    res.status(201).json(token);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -21,7 +24,8 @@ export const login = async (req, res) => {
     }).exec();
 
     if (user && (await user.isValidPassword(req.body.password))) {
-      res.json(user);
+        const token = jwtService.generateAcessToken(user);
+      res.json(token);
     }
 
     res.status(404).json({
